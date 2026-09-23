@@ -1,0 +1,38 @@
+[importlinter]
+root_package = app
+include_external_packages = True
+
+[importlinter:contract:layers]
+name = Layers call downward only
+type = layers
+layers =
+    app.main
+    app.api : app.ws
+    app.modules
+    app.common : app.integrations
+    app.core
+
+[importlinter:contract:core-is-independent]
+name = core imports nothing above it
+type = forbidden
+source_modules =
+    app.core
+forbidden_modules =
+    app.api
+    app.ws
+    app.modules
+    app.integrations
+    app.common
+
+[importlinter:contract:sdk-only-in-integrations]
+name = claude_agent_sdk only inside app.integrations.claude
+type = forbidden
+source_modules =
+    app.api
+    app.ws
+    app.modules
+    app.common
+    app.core
+    app.main
+forbidden_modules =
+    claude_agent_sdk
