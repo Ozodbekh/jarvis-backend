@@ -20,6 +20,20 @@ The reasons are `docs/STRUCTURE_DECISION.md` §3. This file is how the code must
 The events crossing the boundary are this package's own small dataclasses (text delta, tool use, result), not SDK
 types, so `modules/` never sees the SDK.
 
+## One task owns the client
+
+`ClaudeSDKClient` holds an anyio task group from `connect()` to `disconnect()`, and its docstring requires every
+operation to happen in the async context that connected it. A FastAPI request runs in its own task, so
+`SdkClaudeSession` starts one owner task that connects, serves prompts from a queue one by one, and disconnects —
+all in that task. `ask()` puts a request on the queue and reads its events back from a per-request queue.
+`interrupt()` is the one call made from outside the owner, and a failure there is logged, not raised.
+Guarded by `tests/integrations/claude/test_session.py::test_client_lives_in_one_task_from_connect_to_disconnect`.
+
+A request that fails raises `ClaudeUnavailableError` to its caller and leaves the owner serving the next one.
+
+Checked against a real session on 2026-09-23 (`-m live`): connect, answer, and `resume` recalling the previous
+turn; skill names missing from the vault do not fail `connect()`.
+
 ## Options
 
 Built from `Settings`, never from literals in a service:

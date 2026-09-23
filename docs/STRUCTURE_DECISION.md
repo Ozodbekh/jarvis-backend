@@ -145,7 +145,7 @@ Stage 1, each step reported to the owner before the next:
 1. Docs and tooling — **done**.
 2. `app/core/` (config, logging, exceptions), `app/common/schemas.py`, `create_app()`, `/health`, their tests —
    **done**.
-3. `app/integrations/claude/`: the protocol and the SDK-backed client.
+3. `app/integrations/claude/`: the protocol and the SDK-backed client — **done**.
 4. `app/modules/brain/`: service, lock, state file, rotation; `app/modules/vault/`: path and layout check;
    `app/lifespan.py`, added then to `.importlinter` beside `app.main` — import-linter refuses a module that does not
    exist, so it is not listed before.
