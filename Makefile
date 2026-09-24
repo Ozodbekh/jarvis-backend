@@ -23,7 +23,7 @@ test:  ## testlar
 	uv run pytest
 
 vault:  ## vault papkasini yaratish va vault_template'dan to'ldirish
-	uv run python scripts/init_vault.py
+	uv run python -m scripts.init_vault
 
 clean:  ## __pycache__ tozalash
 	@find . -path ./.venv -prune -o -name __pycache__ -type d -print0 | xargs -0 rm -rf

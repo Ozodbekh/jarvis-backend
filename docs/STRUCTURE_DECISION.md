@@ -103,7 +103,9 @@ follow the same shape in stage 3.
 ### 4.3 `vault_template/`
 
 JARVIS's persona and its skills are versioned here and copied into the vault by `make vault`. The vault itself is
-data, lives outside the repository and is never committed from here.
+data, lives outside the repository and is never committed from here. The template stores them as `JARVIS.md` and
+`skills/` and the copy renames them, because Claude Code loads any `CLAUDE.md` or `.claude/skills/` under this
+repository into the developer session — it did on 2026-09-24 before the rename.
 
 ## 5. The vault
 
@@ -154,9 +156,14 @@ Stage 1, each step reported to the owner before the next:
    (probed 2026-09-23).
 5. `POST /api/v1/command` and `WS /ws` — **done**; run end to end against a real session on 2026-09-24: an
    Uzbek command over HTTP and a Russian one over the WebSocket, each answered in its language, one session.
-6. `vault_template/` with `CLAUDE.md` and the five skills; `scripts/init_vault.py`; `make vault`.
+6. `vault_template/` with the persona and the five skills; `scripts/init_vault.py`; `make vault` — **done**.
 
-Stages 2–4 are planned after stage 1 runs end to end.
+Stage 1 ran end to end on 2026-09-24 against `~/jarvis-vault`: "remember", a metric, today's plan and a recall, in
+Uzbek, each answered in Uzbek and written to the right folder. A command that writes notes took 9–13 s and a plain
+recall 3 s — the number stage 3 has to live with.
+
+Proposed to the owner, not yet agreed: voice (stage 3) before the memory work of stage 2, which the vault covers for
+now. Stage 3 decides the TTS provider for Uzbek and where the microphone lives (the browser HUD or this machine).
 
 ## 10. Still open
 

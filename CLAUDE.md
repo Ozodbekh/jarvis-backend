@@ -8,8 +8,8 @@ reasons are in `docs/STRUCTURE_DECISION.md`. This file holds only what every fil
 
 Written: `docs/`, the tooling, `app/core/`, `app/common/schemas.py`, `app/main.py` with `/health`,
 `app/lifespan.py`, `app/integrations/claude/`, `app/modules/{brain,vault}/`, `POST /api/v1/command`, `WS /ws`,
-and their tests. `vault_template/` and `scripts/` do not exist yet, so the server refuses to start until a vault is
-made by hand. Build order: `docs/STRUCTURE_DECISION.md` §9.
+`vault_template/`, `scripts/init_vault.py`, and their tests. Stage 1 runs end to end. Next stages:
+`docs/STRUCTURE_DECISION.md` §9.
 
 ## Stack
 
@@ -31,7 +31,7 @@ ruff · mypy strict · import-linter. No database, no Redis.
 | `app/modules/vault/` | vault paths, layout check, reads for the HUD |
 | `app/api/v1/` | HTTP routers and request/response schemas |
 | `app/ws/` | the WebSocket endpoint and its message schemas |
-| `vault_template/` | JARVIS's own `CLAUDE.md` and `.claude/skills/*/SKILL.md`, copied into the vault |
+| `vault_template/` | JARVIS's `JARVIS.md` and `skills/*/SKILL.md`, copied into the vault as `CLAUDE.md` and `.claude/skills/` |
 | `scripts/` | `init_vault.py` and other one-off commands |
 | `tests/` | mirrors `app/` one to one: `app/core/config.py` → `tests/core/test_config.py` |
 | `docs/` | `STRUCTURE_DECISION.md` and `rules/` — path-scoped rules, indexed by its README |
@@ -39,8 +39,9 @@ ruff · mypy strict · import-linter. No database, no Redis.
 ## Two Claude sessions, never mixed
 
 This file and `docs/rules/` are for the **developer** session working on this repository. JARVIS's **runtime**
-session runs with its working directory in the vault and reads `vault_template/`'s copy there. Nothing in
-`vault_template/` is an instruction to the developer session, and nothing here reaches JARVIS.
+session runs with its working directory in the vault and reads `vault_template/`'s copy there. The template never
+uses the names `CLAUDE.md` or `.claude/`, because Claude Code loads those from any subdirectory of this repository
+into the developer session (`tests/scripts/test_init_vault.py`). Nothing here reaches JARVIS.
 
 ## Commands
 
