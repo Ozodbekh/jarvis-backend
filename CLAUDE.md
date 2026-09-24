@@ -6,10 +6,10 @@ reasons are in `docs/STRUCTURE_DECISION.md`. This file holds only what every fil
 
 ## Status
 
-Written: `docs/`, the tooling, `app/core/` (config, logging, exceptions), `app/common/schemas.py`, `app/main.py`
-with `/health`, `app/integrations/claude/` (events, options, session), and their tests. `app/api/`, `app/ws/`,
-`app/modules/` are empty packages;
-`app/lifespan.py`, `vault_template/` and `scripts/` do not exist yet. Build order: `docs/STRUCTURE_DECISION.md` §9.
+Written: `docs/`, the tooling, `app/core/`, `app/common/schemas.py`, `app/main.py` with `/health`,
+`app/lifespan.py`, `app/integrations/claude/`, `app/modules/{brain,vault}/`, and their tests. `app/api/` and
+`app/ws/` are empty packages; `vault_template/` and `scripts/` do not exist yet, so the server refuses to start
+until a vault is made by hand. Build order: `docs/STRUCTURE_DECISION.md` §9.
 
 ## Stack
 

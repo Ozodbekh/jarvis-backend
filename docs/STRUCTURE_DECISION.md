@@ -61,7 +61,9 @@ Field names checked against the installed package, `claude-agent-sdk` 0.2.158 wi
 persona and language rule) and `.claude/skills/`. `skills` names the enabled skills explicitly. User settings from
 `~/.claude` are not loaded, so the developer's own configuration never leaks into JARVIS.
 
-Credentials are Claude Code's own login on this machine; no API key is stored by the backend.
+Credentials are Claude Code's own login on this machine; no API key is stored by the backend. The SDK runs the
+Claude Code CLI bundled inside the package, not the one on `PATH` — observed at startup on 2026-09-23 — so upgrading
+`claude-agent-sdk` is what upgrades JARVIS's Claude Code.
 
 ### 3.3 Permissions
 
@@ -147,8 +149,9 @@ Stage 1, each step reported to the owner before the next:
    **done**.
 3. `app/integrations/claude/`: the protocol and the SDK-backed client — **done**.
 4. `app/modules/brain/`: service, lock, state file, rotation; `app/modules/vault/`: path and layout check;
-   `app/lifespan.py`, added then to `.importlinter` beside `app.main` — import-linter refuses a module that does not
-   exist, so it is not listed before.
+   `app/lifespan.py` — **done**. The SDK contract in `.importlinter` allows indirect imports: a module reaching the
+   SDK through `app.integrations.claude` is the design, a direct `import claude_agent_sdk` is still refused
+   (probed 2026-09-23).
 5. `POST /api/v1/command` and `WS /ws`.
 6. `vault_template/` with `CLAUDE.md` and the five skills; `scripts/init_vault.py`; `make vault`.
 

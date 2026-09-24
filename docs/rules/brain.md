@@ -58,7 +58,10 @@ owner's word — never `Bash` wholesale.
 - One client per process, connected in `lifespan`, disconnected on shutdown.
 - `asyncio.Lock`; `lock.locked()` at entry raises `BrainBusyError("BRAIN_BUSY")` instead of waiting.
 - Each result's `session_id` is written to the state file; `num_turns` summed across results decides rotation past
-  `BRAIN_MAX_TURNS`.
+  `BRAIN_MAX_TURNS`. Rotation happens at the start of the next command, inside the lock, so an abandoned command
+  can never skip it.
+- A stored session that fails to resume is dropped and a fresh one started; only a fresh start that fails is
+  `BRAIN_UNAVAILABLE`.
 - A `ResultMessage` with `is_error` raises `BrainFailedError("BRAIN_FAILED")` with its `subtype` in `details`.
 - A WebSocket that disconnects mid-command interrupts the session, so a dropped client does not leave work running.
 

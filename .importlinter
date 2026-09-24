@@ -7,6 +7,7 @@ name = Layers call downward only
 type = layers
 layers =
     app.main
+    app.lifespan
     app.api : app.ws
     app.modules
     app.common : app.integrations
@@ -34,5 +35,7 @@ source_modules =
     app.common
     app.core
     app.main
+    app.lifespan
 forbidden_modules =
     claude_agent_sdk
+allow_indirect_imports = True

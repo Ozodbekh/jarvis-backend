@@ -15,6 +15,10 @@ ERROR_MESSAGES: dict[str, str] = {
     "NOT_FOUND": "Not found.",
     "METHOD_NOT_ALLOWED": "Method not allowed.",
     "HTTP_ERROR": "The request failed.",
+    "BRAIN_BUSY": "JARVIS is still working on the previous command.",
+    "BRAIN_FAILED": "JARVIS could not finish the command.",
+    "BRAIN_UNAVAILABLE": "JARVIS is not connected.",
+    "VAULT_MISSING": "The vault is missing or incomplete.",
 }
 
 HTTP_STATUS_CODES: dict[int, str] = {
