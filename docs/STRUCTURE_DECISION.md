@@ -152,7 +152,8 @@ Stage 1, each step reported to the owner before the next:
    `app/lifespan.py` — **done**. The SDK contract in `.importlinter` allows indirect imports: a module reaching the
    SDK through `app.integrations.claude` is the design, a direct `import claude_agent_sdk` is still refused
    (probed 2026-09-23).
-5. `POST /api/v1/command` and `WS /ws`.
+5. `POST /api/v1/command` and `WS /ws` — **done**; run end to end against a real session on 2026-09-24: an
+   Uzbek command over HTTP and a Russian one over the WebSocket, each answered in its language, one session.
 6. `vault_template/` with `CLAUDE.md` and the five skills; `scripts/init_vault.py`; `make vault`.
 
 Stages 2–4 are planned after stage 1 runs end to end.
@@ -162,3 +163,5 @@ Stages 2–4 are planned after stage 1 runs end to end.
 - The model and effort JARVIS runs at — a setting; chosen by measuring latency on real commands.
 - Whether the HUD is served by this backend or is a separate frontend (stage 4).
 - An auth token on the WebSocket if the HUD ever runs on another device.
+- Whether `ResultMessage.total_cost_usd` is per command or the connected session's running total: two commands on
+  one session reported 0.036 then 0.111. Settle before the HUD shows a cost.

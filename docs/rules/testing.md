@@ -18,11 +18,17 @@ A test never starts a Claude session, never calls the network and never touches 
 
 - **Claude**: `tests/fakes/claude.py` implements the protocol `app/integrations/claude/` exposes and replays scripted
   messages. The brain service is tested only against it.
-- **Vault**: a `tmp_path` fixture builds a vault; `JARVIS_VAULT_DIR` points at it.
+- **Vault**: `tests/fakes/vault.py::build_vault` lays one out under `tmp_path`; `JARVIS_VAULT_DIR` points at it.
 - **State**: `data/state.json` is redirected into `tmp_path` too.
 
 `app/integrations/claude/` itself is covered by a test that builds `ClaudeAgentOptions` from `Settings` and checks
 the fields — the one place the SDK's shape is pinned — without connecting.
+
+## Fixtures
+
+`tests/conftest.py`: `settings` (paths under `tmp_path`), `claude` (the fake session), `running_app` (lifespan
+run with the fake and a built vault) and `api` (an `httpx` client on it). WebSocket tests build their own
+`TestClient`, which runs the lifespan itself.
 
 ## Settings
 

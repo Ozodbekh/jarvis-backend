@@ -2,17 +2,9 @@ from pathlib import Path
 
 import pytest
 
-from app.modules.vault.constants import VAULT_REQUIRED_DIRS, VAULT_REQUIRED_FILES
 from app.modules.vault.exceptions import VaultMissingError
 from app.modules.vault.service import VaultService
-
-
-def build_vault(root: Path) -> Path:
-    for name in VAULT_REQUIRED_DIRS:
-        (root / name).mkdir(parents=True, exist_ok=True)
-    for name in VAULT_REQUIRED_FILES:
-        (root / name).write_text("# JARVIS\n")
-    return root
+from tests.fakes.vault import build_vault
 
 
 def test_complete_vault_is_ready(tmp_path: Path) -> None:

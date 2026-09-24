@@ -30,6 +30,7 @@ class FakeClaudeSession:
         self.refuse_start = False
         self.fail_next_ask = False
         self.gate: asyncio.Event | None = None
+        self.asked = asyncio.Event()
         self.interrupts = 0
         self.stops = 0
         self._running = False
@@ -47,6 +48,7 @@ class FakeClaudeSession:
 
     async def ask(self, prompt: str) -> AsyncIterator[BrainEvent]:
         self.prompts.append(prompt)
+        self.asked.set()
         if self.fail_next_ask:
             self.fail_next_ask = False
             raise ClaudeUnavailableError("cli died")

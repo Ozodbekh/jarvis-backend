@@ -7,9 +7,9 @@ reasons are in `docs/STRUCTURE_DECISION.md`. This file holds only what every fil
 ## Status
 
 Written: `docs/`, the tooling, `app/core/`, `app/common/schemas.py`, `app/main.py` with `/health`,
-`app/lifespan.py`, `app/integrations/claude/`, `app/modules/{brain,vault}/`, and their tests. `app/api/` and
-`app/ws/` are empty packages; `vault_template/` and `scripts/` do not exist yet, so the server refuses to start
-until a vault is made by hand. Build order: `docs/STRUCTURE_DECISION.md` §9.
+`app/lifespan.py`, `app/integrations/claude/`, `app/modules/{brain,vault}/`, `POST /api/v1/command`, `WS /ws`,
+and their tests. `vault_template/` and `scripts/` do not exist yet, so the server refuses to start until a vault is
+made by hand. Build order: `docs/STRUCTURE_DECISION.md` §9.
 
 ## Stack
 

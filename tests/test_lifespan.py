@@ -9,7 +9,7 @@ from app.modules.brain.state import BrainState, StateStore
 from app.modules.vault.exceptions import VaultMissingError
 from app.modules.vault.service import VaultService
 from tests.fakes.claude import FakeClaudeSession
-from tests.modules.vault.test_service import build_vault
+from tests.fakes.vault import build_vault
 
 
 async def test_startup_checks_the_vault_and_starts_the_brain(settings: Settings) -> None:
