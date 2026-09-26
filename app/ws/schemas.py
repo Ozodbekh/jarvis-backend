@@ -41,3 +41,27 @@ class Error(ResponseSchema):
 
 
 type ServerMessage = Started | Delta | Tool | Done | Error
+
+
+VoiceLanguage = Literal["auto", "uz", "ru", "en"]
+
+
+class VoiceControl(RequestSchema):
+    type: Literal["listen", "played", "language"]
+    language: VoiceLanguage | None = None
+
+
+class VoiceStateMessage(ResponseSchema):
+    type: Literal["state"] = "state"
+    state: Literal["idle", "listening", "thinking", "speaking"]
+
+
+class VoiceHeard(ResponseSchema):
+    type: Literal["heard"] = "heard"
+    text: str
+    language: str
+
+
+class VoiceReply(ResponseSchema):
+    type: Literal["reply"] = "reply"
+    text: str

@@ -44,3 +44,23 @@ async def test_startup_refuses_without_a_vault(settings: Settings, tmp_path: Pat
             pass
 
     assert claude.starts == []
+
+
+async def test_startup_loads_voice_when_given_engines(settings: Settings) -> None:
+    from app.modules.voice.service import VoiceService
+    from tests.fakes.voice import fake_engines
+
+    build_vault(settings.JARVIS_VAULT_DIR)
+    engines, *_ = fake_engines()
+    app = create_app(settings, claude_session=FakeClaudeSession(), voice_engines=engines)
+
+    async with app.router.lifespan_context(app):
+        assert isinstance(app.state.voice, VoiceService)
+
+
+async def test_voice_is_absent_when_turned_off(settings: Settings) -> None:
+    build_vault(settings.JARVIS_VAULT_DIR)
+    app = create_app(settings, claude_session=FakeClaudeSession())
+
+    async with app.router.lifespan_context(app):
+        assert not hasattr(app.state, "voice")

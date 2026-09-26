@@ -66,3 +66,25 @@ def test_unknown_effort_is_rejected() -> None:
 def test_max_turns_must_be_positive() -> None:
     with pytest.raises(ValidationError):
         Settings(_env_file=None, BRAIN_MAX_TURNS=0)
+
+
+def test_voice_defaults() -> None:
+    settings = Settings(_env_file=None, VOICE_ENABLED=True)
+
+    assert settings.VOICE_LANGUAGES == ["uz", "ru", "en"]
+    assert settings.VOICE_STT_MODEL == "small"
+    assert settings.VOICE_MODELS_DIR.is_absolute()
+    assert 0 < settings.VOICE_WAKE_THRESHOLD < 1
+
+
+def test_voice_languages_from_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("VOICE_LANGUAGES", "ru,en")
+
+    assert Settings(_env_file=None).VOICE_LANGUAGES == ["ru", "en"]
+
+
+def test_uzbek_stt_model_defaults() -> None:
+    settings = Settings(_env_file=None)
+
+    assert settings.VOICE_STT_UZ_SOURCE == "OvozifyLabs/whisper-small-uz-v1"
+    assert settings.VOICE_STT_UZ_DIR.is_absolute()

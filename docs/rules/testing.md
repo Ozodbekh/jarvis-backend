@@ -20,6 +20,9 @@ A test never starts a Claude session, never calls the network and never touches 
   messages. The brain service is tested only against it.
 - **Vault**: `tests/fakes/vault.py::build_vault` lays one out under `tmp_path`; `JARVIS_VAULT_DIR` points at it.
 - **State**: `data/state.json` is redirected into `tmp_path` too.
+- **Voice**: `tests/fakes/voice.py` — a transcriber, a speaker and a wake word that fires on loud audio.
+  `tests/conftest.py` sets `VOICE_ENABLED=false`, so no model is loaded unless a test passes engines.
+- **Desktop**: only `desktop/pcm.py` is unit-tested; the Qt window is checked by rendering it offscreen.
 
 `app/integrations/claude/` itself is covered by a test that builds `ClaudeAgentOptions` from `Settings` and checks
 the fields — the one place the SDK's shape is pinned — without connecting.

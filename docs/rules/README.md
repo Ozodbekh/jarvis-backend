@@ -22,6 +22,7 @@ Every file opens with a `paths:` frontmatter block. Claude Code loads the file w
 | `testing.md` | `tests/**`, `pyproject.toml` | the mirror tree, fakes, markers, what a test may never do |
 | `api.md` | `app/api/**`, `app/ws/**`, `app/common/schemas.py` | routers, schemas, errors, the WebSocket message shape |
 | `brain.md` | `app/integrations/claude/**`, `app/modules/brain/**`, `app/lifespan.py` | the session, options, permissions, the lock, rotation, streaming |
+| `voice.md` | `app/integrations/{stt,tts,wakeword}/**`, `app/modules/voice/**`, `app/ws/voice.py`, `app/core/audio.py`, `desktop/**` | the pipeline and its states, engines, language choice, the desktop client |
 | `vault.md` | `app/modules/vault/**`, `vault_template/**`, `scripts/init_vault.py` | the vault path and layout, who writes it, skills and the persona |
 
 ## What belongs in a rule file

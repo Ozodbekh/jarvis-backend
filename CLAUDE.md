@@ -1,21 +1,23 @@
 # JARVIS Backend
 
-A personal voice assistant's backend: FastAPI in front of a Claude Code session driven through the Claude Agent SDK,
-with an Obsidian-style markdown vault as its only memory. One user, one machine, localhost only. Decisions and their
+A personal voice assistant: FastAPI in front of a Claude Code session driven through the Claude Agent SDK, with an
+Obsidian-style markdown vault as its only memory, and a PySide6 desktop window as its face and ears. One user, one
+machine, localhost only. Decisions and their
 reasons are in `docs/STRUCTURE_DECISION.md`. This file holds only what every file obeys.
 
 ## Status
 
 Written: `docs/`, the tooling, `app/core/`, `app/common/schemas.py`, `app/main.py` with `/health`,
 `app/lifespan.py`, `app/integrations/claude/`, `app/modules/{brain,vault}/`, `POST /api/v1/command`, `WS /ws`,
-`vault_template/`, `scripts/init_vault.py`, and their tests. Stage 1 runs end to end. Next stages:
-`docs/STRUCTURE_DECISION.md` §9.
+`vault_template/`, `scripts/init_vault.py`, the voice pipeline (`WS /ws/voice`) and the PySide6 `desktop/` window, and
+their tests. Stages 1 and 3 run end to end. Next: `docs/STRUCTURE_DECISION.md` §9.
 
 ## Stack
 
 Python 3.14 · uv · FastAPI 0.141 (`fastapi[standard]`: uvicorn, uvloop, httptools, websockets) ·
-`claude-agent-sdk` · Pydantic v2 + pydantic-settings · structlog · pytest + pytest-asyncio + httpx ·
-ruff · mypy strict · import-linter. No database, no Redis.
+`claude-agent-sdk` · Pydantic v2 + pydantic-settings · structlog · `faster-whisper` · `openwakeword` 0.4 · `piper-tts` ·
+`torch` (CPU) + `transformers` for MMS · PySide6 · pytest + pytest-asyncio + httpx · ruff · mypy strict ·
+import-linter. No database, no Redis.
 
 ## Layout
 
@@ -26,11 +28,13 @@ ruff · mypy strict · import-linter. No database, no Redis.
 | `app/core/` | config, logging, exceptions — infrastructure, no business rule |
 | `app/common/` | shared schema bases and types every module inherits |
 | `app/integrations/claude/` | the only package that imports `claude_agent_sdk` |
-| `app/integrations/{stt,tts}/` | voice providers, one package each (stage 3) |
+| `app/integrations/{stt,tts,wakeword}/` | whisper, MMS and Piper, openWakeWord — each behind a protocol |
 | `app/modules/brain/` | the Claude session: one conversation, one command at a time, rotation |
 | `app/modules/vault/` | vault paths, layout check, reads for the HUD |
+| `app/modules/voice/` | the voice session: wake word → record → STT → brain → TTS, and end-of-speech |
 | `app/api/v1/` | HTTP routers and request/response schemas |
-| `app/ws/` | the WebSocket endpoint and its message schemas |
+| `app/ws/` | `/ws` (text) and `/ws/voice` (audio) and their message schemas |
+| `desktop/` | the PySide6 window: microphone, speaker, status; starts and stops the backend |
 | `vault_template/` | JARVIS's `JARVIS.md` and `skills/*/SKILL.md`, copied into the vault as `CLAUDE.md` and `.claude/skills/` |
 | `scripts/` | `init_vault.py` and other one-off commands |
 | `tests/` | mirrors `app/` one to one: `app/core/config.py` → `tests/core/test_config.py` |
@@ -45,9 +49,10 @@ into the developer session (`tests/scripts/test_init_vault.py`). Nothing here re
 
 ## Commands
 
-`make help` lists everything. `make run` · `lint` · `format` · `typecheck` · `imports` · `test` · `vault`.
+`make help` lists everything. `make jarvis` (the window; it starts the backend) · `run` · `lint` · `format` ·
+`typecheck` · `imports` · `test` · `vault`.
 
-`make check` is the definition of done: `ruff check`, `ruff format --check`, `mypy app`, `lint-imports`,
+`make check` is the definition of done: `ruff check`, `ruff format --check`, `mypy app desktop`, `lint-imports`,
 `pytest -q`. Green or not finished.
 
 ## Rules
@@ -59,6 +64,9 @@ strict. Do not restate them in prose.
 **Brain.** One `ClaudeSDKClient` per process, one command at a time behind a lock; a second command while one runs
 is `BRAIN_BUSY`, never a second session. Options are built in one place from `Settings`. Full form:
 `docs/rules/brain.md`.
+
+**Voice.** One `VoiceSession` per `/ws/voice` connection; audio is ignored while thinking and speaking; models load
+once in a thread and run off the event loop. `desktop/` never imports `app`. `docs/rules/voice.md`.
 
 **Vault.** The vault path comes from `JARVIS_VAULT_DIR`, never a literal. The backend reads the vault; only the
 runtime Claude session writes it. `docs/rules/vault.md`.

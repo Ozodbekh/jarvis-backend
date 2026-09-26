@@ -9,7 +9,9 @@ from app.core.exceptions import register_exception_handlers
 from app.core.logging import configure_logging
 from app.integrations.claude.session import ClaudeSession
 from app.lifespan import make_lifespan
+from app.modules.voice.service import VoiceEngines
 from app.ws.router import router as ws_router
+from app.ws.voice import router as voice_router
 
 
 class HealthResponse(ResponseSchema):
@@ -20,13 +22,17 @@ async def health() -> HealthResponse:
     return HealthResponse(status="ok")
 
 
-def create_app(settings: Settings | None = None, claude_session: ClaudeSession | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None,
+    claude_session: ClaudeSession | None = None,
+    voice_engines: VoiceEngines | None = None,
+) -> FastAPI:
     settings = settings or get_settings()
     configure_logging(settings)
 
     app = FastAPI(
         title="JARVIS",
-        lifespan=make_lifespan(settings, claude_session),
+        lifespan=make_lifespan(settings, claude_session, voice_engines),
         docs_url="/docs" if settings.DEBUG else None,
         redoc_url=None,
         openapi_url="/openapi.json" if settings.DEBUG else None,
@@ -36,6 +42,7 @@ def create_app(settings: Settings | None = None, claude_session: ClaudeSession |
     app.add_api_route("/health", health, methods=["GET"], include_in_schema=False)
     app.include_router(api_router)
     app.include_router(ws_router)
+    app.include_router(voice_router)
     return app
 
 

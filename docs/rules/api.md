@@ -37,6 +37,7 @@ Raise an `AppError` subclass with a machine code. The handler in `app/core/excep
 | `GET /health` | answers from memory; hidden from the schema |
 | `POST /api/v1/command` | `{text}` → the whole answer, the session id, cost and duration |
 | `WS /ws` | the streamed conversation, below |
+| `WS /ws/voice` | binary 16 kHz int16 audio in; `state`, `heard`, `reply`, `error` JSON and one WAV per reply out — `docs/rules/voice.md` |
 
 ## The WebSocket message shape
 

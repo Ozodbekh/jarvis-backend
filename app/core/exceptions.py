@@ -19,6 +19,7 @@ ERROR_MESSAGES: dict[str, str] = {
     "BRAIN_FAILED": "JARVIS could not finish the command.",
     "BRAIN_UNAVAILABLE": "JARVIS is not connected.",
     "VAULT_MISSING": "The vault is missing or incomplete.",
+    "VOICE_UNAVAILABLE": "Voice is turned off or still loading.",
 }
 
 HTTP_STATUS_CODES: dict[int, str] = {

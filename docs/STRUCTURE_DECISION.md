@@ -131,9 +131,46 @@ not before.
 
 ## 7. Voice (stage 3)
 
-Three languages, no GPU. `faster-whisper` on CPU handles Russian and English well and Uzbek less well; a good local
-Uzbek TTS voice is the weakest point. Decided: STT and TTS sit behind one protocol each in `app/integrations/`, the
-provider is a setting, and the choice between local and a cloud provider is made in stage 3 with measurements.
+Three languages, no GPU. Measured on 2026-09-24 on this machine (8 cores, CPU only, Python 3.14), in an isolated
+environment, with synthesized speech as input — the owner's own voice is still to be measured:
+
+| Part | Choice tried | Result |
+|---|---|---|
+| STT ru/en | `faster-whisper` `small`, int8 | right, one name misheard; 2–3 s a sentence; `medium` exact at 5–7 s |
+| STT uz | `faster-whisper` `small` / `medium` / `large-v3-turbo` | poor on every size; auto-detect says Persian or Pashto, so the language must be restricted to uz/ru/en or chosen |
+| TTS uz | MMS `facebook/mms-tts-uzb-script_cyrillic` (`torch` + `transformers`) | works after Latin→Cyrillic transliteration; 1.7 s for 7.5 s of speech; robotic |
+| TTS ru/en | Piper `ru_RU-irina`/`denis`, `en_US-amy` | 0.2 s a sentence; Piper has no Uzbek voice |
+| Wake word | `openWakeWord` `hey_jarvis` | "Hey Jarvis" 0.999, bare "Jarvis" 0.993, an Uzbek sentence 0.000; 0.1 s CPU for 5 s of audio |
+
+Uzbek STT with real speech, measured on 2026-09-24 on 20 clips (246 s) of Google FLEURS `uz_uz` test, language
+forced to `uz`, word error rate after lowercasing and removing punctuation:
+
+| Model | WER | Time per second of audio |
+|---|---|---|
+| `small` (stock) | 107.5 % | 0.66 s |
+| `OvozifyLabs/whisper-small-uz-v1`, converted to CTranslate2 int8 | **16.3 %** | **0.21 s** |
+| `navai-uz/whisper-medium-uzbek`, converted — trained on FLEURS, so flattered here | 19.3 % | 0.61 s |
+
+The owner's own Uzbek had come out as "Тинец." or nothing on stock `small`. Decided: Uzbek goes to the Ovozify
+fine-tune; the desktop window has a language picker (Oʻzbek, Русский, English, Avto), Uzbek by default. A FLEURS
+clip sent through `/ws/voice` with `uz` came back word for word but one inserted "tut", and was answered and
+spoken in Uzbek.
+
+`openwakeword` resolves to 0.4.0 on Python 3.14 (its later releases need `tflite-runtime`, which has no 3.14 wheel):
+the constructor takes `wakeword_model_paths`, not `wakeword_models`, and the models come from
+`openwakeword.get_pretrained_model_paths()`.
+
+Decided with the owner on 2026-09-24: a PySide6 desktop window (`desktop/`), not a browser page and not a terminal
+client, with the wake word "Hey Jarvis" through `openWakeWord` and a push-to-talk button as a fallback. The window
+streams the microphone to this backend; wake word, end of speech, STT and TTS run here, behind one protocol each in
+`app/integrations/`, so a cloud provider can replace a local one by a setting.
+
+Run end to end on 2026-09-24 through `/ws/voice` with synthesized speech: "Hey Jarvis" then an English, a Russian
+and an Uzbek question, each answered from the vault and spoken back in its language, about 6.5 s from the end of
+speech to the reply's audio (STT 3 s, Claude 2.5 s, TTS 1 s). A Russian "Эй, Джарвис" does not wake it — the model
+knows the English phrase. Uzbek STT on synthesized input came out garbled and still got a right Uzbek answer.
+The desktop window started the backend, connected, and on a real microphone woke once on room sound and dropped the
+empty transcript; the owner's own voice is still to be tried.
 
 ## 8. Security
 
@@ -162,8 +199,8 @@ Stage 1 ran end to end on 2026-09-24 against `~/jarvis-vault`: "remember", a met
 Uzbek, each answered in Uzbek and written to the right folder. A command that writes notes took 9–13 s and a plain
 recall 3 s — the number stage 3 has to live with.
 
-Proposed to the owner, not yet agreed: voice (stage 3) before the memory work of stage 2, which the vault covers for
-now. Stage 3 decides the TTS provider for Uzbek and where the microphone lives (the browser HUD or this machine).
+Stage 3, voice, was built next at the owner's word, before stage 2 — §7. Left: the owner's own voice on Uzbek STT,
+stage 2's memory work, and the HUD panels of stage 4.
 
 ## 10. Still open
 

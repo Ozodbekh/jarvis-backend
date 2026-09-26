@@ -2,6 +2,7 @@ import os
 
 os.environ["DEBUG"] = "false"
 os.environ["LOG_LEVEL"] = "WARNING"
+os.environ["VOICE_ENABLED"] = "false"
 
 from collections.abc import AsyncIterator, Iterator
 from pathlib import Path

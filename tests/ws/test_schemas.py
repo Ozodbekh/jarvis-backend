@@ -33,3 +33,20 @@ def test_server_messages_carry_their_type() -> None:
     assert json.loads(Error(code="BRAIN_BUSY", message="m").model_dump_json())["type"] == "error"
     done = Done(text="ok", session_id="s1", cost_usd=None, duration_ms=5)
     assert json.loads(done.model_dump_json())["type"] == "done"
+
+
+def test_voice_control_accepts_only_known_types() -> None:
+    from app.ws.schemas import VoiceControl
+
+    assert VoiceControl.model_validate_json('{"type": "listen"}').type == "listen"
+    assert VoiceControl.model_validate_json('{"type": "played"}').type == "played"
+    with pytest.raises(ValidationError):
+        VoiceControl.model_validate_json('{"type": "dance"}')
+
+
+def test_language_control_takes_a_known_language() -> None:
+    from app.ws.schemas import VoiceControl
+
+    assert VoiceControl.model_validate_json('{"type": "language", "language": "uz"}').language == "uz"
+    with pytest.raises(ValidationError):
+        VoiceControl.model_validate_json('{"type": "language", "language": "fr"}')

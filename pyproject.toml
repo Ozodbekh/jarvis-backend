@@ -5,8 +5,15 @@ requires-python = ">=3.14"
 dependencies = [
     "claude-agent-sdk>=0.2.158",
     "fastapi[standard]>=0.141.1",
+    "faster-whisper>=1.2.1",
+    "numpy>=2.5.3",
+    "openwakeword>=0.4.0",
+    "piper-tts>=1.8.0",
     "pydantic-settings>=2.15.0",
+    "pyside6>=6.11.2",
     "structlog>=26.1.0",
+    "torch>=2.14.0",
+    "transformers>=5.17.0",
 ]
 
 [dependency-groups]
@@ -38,7 +45,9 @@ select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "SIM", "RUF", "ASYNC", "S"]
 ignore = ["S101"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S", "ARG"]
+"tests/*" = ["S", "ARG", "RUF001"]
+"app/integrations/tts/uzbek.py" = ["RUF001"]
+"desktop/window.py" = ["RUF001"]
 
 [tool.mypy]
 python_version = "3.14"
@@ -49,3 +58,15 @@ plugins = ["pydantic.mypy"]
 [[tool.mypy.overrides]]
 module = ["tests.*"]
 disallow_untyped_defs = false
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.mypy.overrides]]
+module = ["faster_whisper.*", "openwakeword.*", "transformers.*", "ctranslate2.*"]
+ignore_missing_imports = true

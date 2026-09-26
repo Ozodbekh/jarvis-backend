@@ -5,6 +5,8 @@ from starlette.requests import HTTPConnection
 
 from app.modules.brain.exceptions import BrainUnavailableError
 from app.modules.brain.service import BrainService
+from app.modules.voice.exceptions import VoiceUnavailableError
+from app.modules.voice.service import VoiceService
 
 
 def get_brain(connection: HTTPConnection) -> BrainService:
@@ -15,3 +17,13 @@ def get_brain(connection: HTTPConnection) -> BrainService:
 
 
 Brain = Annotated[BrainService, Depends(get_brain)]
+
+
+def get_voice(connection: HTTPConnection) -> VoiceService:
+    voice = getattr(connection.app.state, "voice", None)
+    if not isinstance(voice, VoiceService):
+        raise VoiceUnavailableError("VOICE_UNAVAILABLE")
+    return voice
+
+
+Voice = Annotated[VoiceService, Depends(get_voice)]

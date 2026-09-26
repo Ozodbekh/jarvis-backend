@@ -1,5 +1,7 @@
 [importlinter]
-root_package = app
+root_packages =
+    app
+    desktop
 include_external_packages = True
 
 [importlinter:contract:layers]
@@ -39,3 +41,11 @@ source_modules =
 forbidden_modules =
     claude_agent_sdk
 allow_indirect_imports = True
+
+[importlinter:contract:desktop-is-a-client]
+name = desktop talks to the backend over the WebSocket only
+type = forbidden
+source_modules =
+    desktop
+forbidden_modules =
+    app
